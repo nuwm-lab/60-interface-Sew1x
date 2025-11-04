@@ -1,146 +1,149 @@
 using System;
 
-using System;
-
-// Абстрактний клас для дробово-лінійної функції
-public abstract class FractionalLinearFunction
+namespace Lab6_AbstractClass
 {
-	// Коефіцієнти чисельника та знаменника
-	protected double a1, a0, b1, b0;
+    abstract class FractionalFunction
+    {
+        protected double x0;
 
-	// Конструктор для ініціалізації коефіцієнтів
-	public FractionalLinearFunction(double a1, double a0, double b1, double b0)
-	{
-		this.a1 = a1;
-		this.a0 = a0;
-		this.b1 = b1;
-		this.b0 = b0;
-		Console.WriteLine("FractionalLinearFunction created");
-	}
+        public FractionalFunction()
+        {
+            Console.WriteLine("Конструктор базового класу викликано");
+        }
 
-	// Деструктор для демонстрації знищення об'єкта
+        ~FractionalFunction()
+        {
+            Console.WriteLine("Деструктор базового класу викликано");
+        }
 
-	~FractionalLinearFunction()
-	{
-		Console.WriteLine("FractionalLinearFunction destroyed");
-	}
+        public abstract void InputCoefficients();
+        public abstract void DisplayCoefficients();
+        public abstract double CalculateValue(double x);
+        
+        public virtual void InputPoint()
+        {
+            Console.Write("x0: ");
+            x0 = Convert.ToDouble(Console.ReadLine());
+        }
 
-	// Абстрактний метод для встановлення коефіцієнтів
-	public abstract void SetCoefficients(double a1, double a0, double b1, double b0);
-	// Абстрактний метод для виведення коефіцієнтів
-	public abstract void PrintCoefficients();
-	// Абстрактний метод для обчислення значення функції
-	public abstract double Calculate(double x);
-}
+        public virtual void ShowValueAtPoint()
+        {
+            Console.WriteLine($"f({x0}) = {CalculateValue(x0):F4}");
+        }
+    }
 
-// Клас-нащадок для дробово-лінійної функції
-public class SimpleFractionalLinearFunction : FractionalLinearFunction
-{
-	// Конструктор, викликає базовий конструктор
-	public SimpleFractionalLinearFunction(double a1, double a0, double b1, double b0)
-		: base(a1, a0, b1, b0) { }
+    class LinearFractionalFunction : FractionalFunction
+    {
+        private double a1, a0, b1, b0;
 
-	// Деструктор
-	~SimpleFractionalLinearFunction()
-	{
-		Console.WriteLine("SimpleFractionalLinearFunction destroyed");
-	}
+        public LinearFractionalFunction() : base()
+        {
+            Console.WriteLine("Конструктор LinearFractionalFunction викликано");
+        }
 
-	// Реалізація встановлення коефіцієнтів
-	public override void SetCoefficients(double a1, double a0, double b1, double b0)
-	{
-		this.a1 = a1;
-		this.a0 = a0;
-		this.b1 = b1;
-		this.b0 = b0;
-	}
+        ~LinearFractionalFunction()
+        {
+            Console.WriteLine("Деструктор LinearFractionalFunction викликано");
+        }
 
-	// Реалізація виведення коефіцієнтів
-	public override void PrintCoefficients()
-	{
-		Console.WriteLine($"Numerator: {a1}*x + {a0}, Denominator: {b1}*x + {b0}");
-	}
+        public override void InputCoefficients()
+        {
+            Console.Write("a1 a0 b1 b0: ");
+            var input = Console.ReadLine().Split();
+            a1 = Convert.ToDouble(input[0]);
+            a0 = Convert.ToDouble(input[1]);
+            b1 = Convert.ToDouble(input[2]);
+            b0 = Convert.ToDouble(input[3]);
+        }
 
-	// Реалізація обчислення значення функції
-	public override double Calculate(double x)
-	{
-		return (a1 * x + a0) / (b1 * x + b0);
-	}
-}
+        public override void DisplayCoefficients()
+        {
+            Console.WriteLine($"({a1}x + {a0}) / ({b1}x + {b0})");
+        }
 
-// Інтерфейс для дробово-лінійної функції
-public interface IFractionalFunction
-{
-	// Встановлення коефіцієнтів
-	void SetCoefficients(double a1, double a0, double b1, double b0);
-	// Виведення коефіцієнтів
-	void PrintCoefficients();
-	// Обчислення значення функції
-	double Calculate(double x);
-}
+        public override double CalculateValue(double x)
+        {
+            double d = b1 * x + b0;
+            return Math.Abs(d) < 1e-10 ? double.NaN : (a1 * x + a0) / d;
+        }
+    }
 
-// Клас, що реалізує інтерфейс дробово-лінійної функції
-public class InterfaceFractionalFunction : IFractionalFunction
-{
-	// Коефіцієнти чисельника та знаменника
-	private double a1, a0, b1, b0;
+    class QuadraticFractionalFunction : FractionalFunction
+    {
+        private double a2, a1, a0, b2, b1, b0;
 
-	// Конструктор для ініціалізації коефіцієнтів
-	public InterfaceFractionalFunction(double a1, double a0, double b1, double b0)
-	{
-		this.a1 = a1;
-		this.a0 = a0;
-		this.b1 = b1;
-		this.b0 = b0;
-		Console.WriteLine("InterfaceFractionalFunction created");
-	}
+        public QuadraticFractionalFunction() : base()
+        {
+            Console.WriteLine("Конструктор QuadraticFractionalFunction викликано");
+        }
 
-	// Деструктор
+        ~QuadraticFractionalFunction()
+        {
+            Console.WriteLine("Деструктор QuadraticFractionalFunction викликано");
+        }
 
-	~InterfaceFractionalFunction()
-	{
-		Console.WriteLine("InterfaceFractionalFunction destroyed");
-	}
+        public override void InputCoefficients()
+        {
+            Console.Write("a2 a1 a0 b2 b1 b0: ");
+            var input = Console.ReadLine().Split();
+            a2 = Convert.ToDouble(input[0]);
+            a1 = Convert.ToDouble(input[1]);
+            a0 = Convert.ToDouble(input[2]);
+            b2 = Convert.ToDouble(input[3]);
+            b1 = Convert.ToDouble(input[4]);
+            b0 = Convert.ToDouble(input[5]);
+        }
 
-	// Реалізація встановлення коефіцієнтів
-	public void SetCoefficients(double a1, double a0, double b1, double b0)
-	{
-		this.a1 = a1;
-		this.a0 = a0;
-		this.b1 = b1;
-		this.b0 = b0;
-	}
+        public override void DisplayCoefficients()
+        {
+            Console.WriteLine($"({a2}x² + {a1}x + {a0}) / ({b2}x² + {b1}x + {b0})");
+        }
 
-	// Реалізація виведення коефіцієнтів
-	public void PrintCoefficients()
-	{
-		Console.WriteLine($"Numerator: {a1}*x + {a0}, Denominator: {b1}*x + {b0}");
-	}
+        public override double CalculateValue(double x)
+        {
+            double d = b2 * x * x + b1 * x + b0;
+            return Math.Abs(d) < 1e-10 ? double.NaN : (a2 * x * x + a1 * x + a0) / d;
+        }
+    }
 
-	// Реалізація обчислення значення функції
-	public double Calculate(double x)
-	{
-		return (a1 * x + a0) / (b1 * x + b0);
-	}
-}
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.WriteLine("Лабораторна №6: Абстрактні класи\n");
 
-// Головний клас для демонстрації роботи
-public class Program
-{
-	// Точка входу програми
-	public static void Main(string[] args)
-	{
-	// Створення та демонстрація роботи класу-нащадка абстрактного класу
-	SimpleFractionalLinearFunction f1 = new SimpleFractionalLinearFunction(1, 2, 3, 4);
-	f1.PrintCoefficients();
-	Console.WriteLine("Value at x=2: " + f1.Calculate(2));
+            FractionalFunction function = null;
+            
+            do
+            {
+                Console.WriteLine("\n1 - Дробово-лінійна (a₁x+a₀)/(b₁x+b₀)");
+                Console.WriteLine("2 - Дробова (a₂x²+a₁x+a₀)/(b₂x²+b₁x+b₀)");
+                Console.WriteLine("0 - Вихід");
+                Console.Write("Вибір: ");
+                
+                string choice = Console.ReadLine();
 
-	// Створення та демонстрація роботи класу, що реалізує інтерфейс
-	InterfaceFractionalFunction f2 = new InterfaceFractionalFunction(5, 6, 7, 8);
-	f2.PrintCoefficients();
-	Console.WriteLine("Value at x=2: " + f2.Calculate(2));
+                if (choice == "0") break;
+                
+                if (choice == "1")
+                    function = new LinearFractionalFunction();
+                else if (choice == "2")
+                    function = new QuadraticFractionalFunction();
+                else
+                {
+                    Console.WriteLine("Невірний вибір!");
+                    continue;
+                }
 
-	// Спроба створити екземпляр абстрактного класу (буде помилка компіляції)
-	// FractionalLinearFunction f3 = new FractionalLinearFunction(1,2,3,4); // Error! Абстрактний клас не можна створити напряму
-	}
+                function.InputCoefficients();
+                function.InputPoint();
+                function.DisplayCoefficients();
+                function.ShowValueAtPoint();
+
+            } while (true);
+
+            Console.WriteLine("\nПрограма завершена.");
+        }
+    }
 }
