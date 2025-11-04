@@ -2,7 +2,22 @@ using System;
 
 namespace Lab6_AbstractClass
 {
-    abstract class FractionalFunction
+    // Інтерфейс для функцій - визначає контракт (тільки сигнатури методів)
+    interface IFunction
+    {
+        double CalculateValue(double x);
+        void DisplayCoefficients();
+    }
+
+    // Інтерфейс для об'єктів, які можна вивести на екран
+    interface IPrintable
+    {
+        void Print();
+        string GetInfo();
+    }
+
+    // Абстрактний клас - може містити поля, конструктори, реалізовані методи
+    abstract class FractionalFunction : IFunction, IPrintable
     {
         protected double x0;
 
@@ -29,6 +44,19 @@ namespace Lab6_AbstractClass
         public virtual void ShowValueAtPoint()
         {
             Console.WriteLine($"f({x0}) = {CalculateValue(x0):F4}");
+        }
+
+        // Реалізація інтерфейсу IPrintable
+        public virtual void Print()
+        {
+            Console.WriteLine("=== Інформація про функцію ===");
+            DisplayCoefficients();
+            Console.WriteLine($"Точка обчислення: x0 = {x0}");
+        }
+
+        public virtual string GetInfo()
+        {
+            return $"Дробово-раціональна функція, x0 = {x0}";
         }
     }
 
@@ -65,6 +93,12 @@ namespace Lab6_AbstractClass
         {
             double d = b1 * x + b0;
             return Math.Abs(d) < 1e-10 ? double.NaN : (a1 * x + a0) / d;
+        }
+
+        // Перевизначення методу з IPrintable
+        public override string GetInfo()
+        {
+            return $"Дробово-лінійна функція: ({a1}x+{a0})/({b1}x+{b0})";
         }
     }
 
@@ -104,6 +138,12 @@ namespace Lab6_AbstractClass
             double d = b2 * x * x + b1 * x + b0;
             return Math.Abs(d) < 1e-10 ? double.NaN : (a2 * x * x + a1 * x + a0) / d;
         }
+
+        // Перевизначення методу з IPrintable
+        public override string GetInfo()
+        {
+            return $"Дробова функція: ({a2}x²+{a1}x+{a0})/({b2}x²+{b1}x+{b0})";
+        }
     }
 
     class Program
@@ -138,11 +178,36 @@ namespace Lab6_AbstractClass
 
                 function.InputCoefficients();
                 function.InputPoint();
+                
+                // Виклик через абстрактний клас
                 function.DisplayCoefficients();
                 function.ShowValueAtPoint();
 
+                // Виклик через інтерфейс IFunction
+                Console.WriteLine("\n--- Робота через інтерфейс IFunction ---");
+                IFunction iFunc = function;
+                Console.Write("Введіть x для обчислення: ");
+                double x = Convert.ToDouble(Console.ReadLine());
+                Console.WriteLine($"Результат: {iFunc.CalculateValue(x):F4}");
+
+                // Виклик через інтерфейс IPrintable
+                Console.WriteLine("\n--- Робота через інтерфейс IPrintable ---");
+                IPrintable iPrint = function;
+                iPrint.Print();
+                Console.WriteLine($"Info: {iPrint.GetInfo()}");
+
             } while (true);
 
+            Console.WriteLine("\n=== АНАЛІЗ ===");
+            Console.WriteLine("Абстрактний клас:");
+            Console.WriteLine("  ✓ Має конструктори і деструктори");
+            Console.WriteLine("  ✓ Містить поля (x0)");
+            Console.WriteLine("  ✓ Реалізовані методи (InputPoint, ShowValueAtPoint)");
+            Console.WriteLine("  ✓ Абстрактні методи");
+            Console.WriteLine("\nІнтерфейс:");
+            Console.WriteLine("  ✓ Тільки сигнатури методів");
+            Console.WriteLine("  ✓ Можна реалізувати багато інтерфейсів");
+            Console.WriteLine("  ✓ Не містить полів і конструкторів");
             Console.WriteLine("\nПрограма завершена.");
         }
     }
